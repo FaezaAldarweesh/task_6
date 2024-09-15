@@ -48,4 +48,10 @@ class Task extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function users()
+    {
+       return $this->hasManyThrough(User::class,Project::class);
+    }
+    
 }

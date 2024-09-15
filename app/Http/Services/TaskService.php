@@ -7,15 +7,15 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Trait\ApiResponseTrait;
+use App\Models\Project;
 use Illuminate\Support\Facades\Request;
 
 class TaskService {
     //trait لقولبة رسائل الاستجابة
     use ApiResponseTrait;
-    public function getAllTAsks($priority,$status){
+    public function getAllTAsks(){
         try {
-            //إعادة جميع المهام و استخدام سكوب فلتر في حالة أراد الأدمن أو المدير الفلترة حسب الحالة للمهة أو درجة أهميتها
-            return Task::filter($priority,$status)->get();
+            return Task::with('users')->get();
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
             return $this->failed_Response('Something went wrong with fetche tasks', 400);
@@ -27,23 +27,23 @@ class TaskService {
             $task = new Task;
             $task->title = $data['title'];
             $task->description = $data['description'];
-            $task->status = $data['status'];  
-            $task->priority = $data['priority'];
+            $task->status = $data['status'] ?? 'New';  
+            $task->priority = $data['priority'] ?? 'Medium';
             $task->due_date = $data['due_date'];
             $task->project_id = $data['project_id'];  
-            $task->notes = $data['notes'];  
-            $task->save();  
-
-            return $task;
-        } catch (\Throwable $th) { 
-            Log::error($th->getMessage()); 
+            $task->notes = $data['notes'] ?? null;  
+           
+            $task->save(); 
+    
+            return $task; // تأكد من إعادة كائن المهمة نفسه
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
             return $this->failed_Response($th->getMessage(), 400);
         }
-    }
-    
+    }    
     //========================================================================================================================
     public function updateTask($data,Task $task){
-        try {
+        try {  
             $task->title = $data['title'] ?? $task->title;
             $task->description = $data['description'] ?? $task->description;
             $task->status = $data['status'] ?? $task->status;  
@@ -54,7 +54,20 @@ class TaskService {
             $task->save();  
 
             return $task;
-        }catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response($th->getMessage(), 400);
+        }catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response($th->getMessage(), 400);}
+    }
+    //========================================================================================================================
+    public function view_task($task_id) {
+        try {    
+            $task = Task::find($task_id);
+            if(!$task){
+                throw new \Exception('task not found');
+            }
+            return $task;
+        } catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 404);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return $this->failed_Response('Something went wrong with view task', 400);
         }
     }
     //========================================================================================================================
@@ -97,41 +110,103 @@ class TaskService {
         }catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);   
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with deleting task', 400);}
     }
-    // //========================================================================================================================
-    // public function AssignTask($data, $task_id)
-    // {
-    //     try {
-    //         $task = Task::findOrFail($task_id);
-            
-    //         if (isset($data['user_id']) && !empty($data['user_id'])) {
-    //             $user = User::findOrFail($data['user_id']);
+    //========================================================================================================================
+    public function insert_task($data) {
+        try {
 
-    //             //التحقق من عدم إستاد المهمة لمستخدم ليس موظفاً
-    //             if ($user->role != 'employee') {
-    //                 throw new \Exception('You cannot assign a task to a manager, only to employees');
-    //             }
-    //         }
-    
-    //         $task->update($data);
-    //         return $task;
-    
-    //     }catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);   
-    //     } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with assign task', 400);}
-    // }
-    // //========================================================================================================================
-    // public function updatedStatus($data , $task_id)
-    // {   
-    //     try {
-    //         $task = Task::findOrFail($task_id);
-    //         if($task->user_id != Auth::id()){
-    //             throw new \Exception('You cannot update the status of this task because its not belongs to you');
-    //         }
-    //             $task->update($data);
-    //         return $task;
-    //     }catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);   
-    //     } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with updating status', 400);}
-    // }
-    // //========================================================================================================================
+            $project = Project::where('id', $data['project_id'])
+                              ->with(['users' => function($query) {
+                              $query->where('user_id', Auth::id());
+            }])->first();
+            $user_role =  $project->users->first()->pivot->role;
+
+            if(!($user_role == 'admin' || $user_role == 'manager')){
+                throw new \Exception('you do not have permisstion to create task,only admin or manager can do that');
+            }else{   
+            $task = new Task;
+            $task->title = $data['title'];
+            $task->description = $data['description'];
+            $task->status = $data['status'];  
+            $task->priority = $data['priority'];
+            $task->due_date = $data['due_date'];
+            $task->project_id = $data['project_id'];  
+            $task->notes = $data['notes'];  
+           
+            $task->save();  
+            }
+            return $task;
+        }catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);
+        } catch (\Throwable $th) { Log::error($th->getMessage());  return $this->failed_Response($th->getMessage(), 400);}
+    }
+    //========================================================================================================================
+    public function edit_task($data,Task $task){
+        try {
+            $project = Project::where('id', $data['project_id'])
+                              ->with(['users' => function($query) {
+                              $query->where('user_id', Auth::id());
+            }])->first();
+            $user_role =  $project->users->first()->pivot->role;
+
+            if(!($user_role == 'admin' || $user_role == 'manager')){
+                throw new \Exception('you do not have permisstion to update task,only admin or manager can do that');
+            }else{   
+            $task->title = $data['title'] ?? $task->title;
+            $task->description = $data['description'] ?? $task->description;
+            $task->status = $data['status'] ?? $task->status;  
+            $task->priority = $data['priority'] ?? $task->priority;
+            $task->due_date = $data['due_date'] ?? $task->due_date;
+            $task->project_id = $data['project_id'] ?? $task->project_id;  
+            $task->notes = $data['notes'] ?? $task->notes;  
+            $task->save();  
+
+            return $task;
+        }
+        }catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);
+        }catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response($th->getMessage(), 400);}
+    }
+    //========================================================================================================================
+    public function updatedStatus($data , $project_id , $task_id)
+    {   
+        try {
+            $task = Task::findOrFail($task_id);
+
+            $project = Project::where('id', $project_id)
+                              ->with(['users' => function($query) {
+                              $query->where('user_id', Auth::id());
+            }])->first();
+            $user_role =  $project->users->first()->pivot->role;
+
+            if($user_role == 'admin' || $user_role == 'manager' || $user_role == 'tester'){
+                throw new \Exception('you do not have permisstion to uptade status of task,only developer can do that');
+            }else{  
+                $task->update($data);
+            return $task;
+            }
+        }catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);   
+        } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with updating status', 400);}
+    }
+    //========================================================================================================================
+    public function updated_Notes($data , $project_id , $task_id)
+    {   
+        try {
+            $task = Task::findOrFail($task_id);
+
+            $project = Project::where('id', $project_id)
+                              ->with(['users' => function($query) {
+                              $query->where('user_id', Auth::id());
+            }])->first();
+            $user_role =  $project->users->first()->pivot->role;
+
+            if($user_role == 'admin' || $user_role == 'manager' || $user_role == 'developer'){
+                throw new \Exception('you do not have permisstion to uptade the notes of task,only tester can do that');
+            }else{  
+                $task->update($data);
+            return $task;
+            }
+        }catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);   
+        } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with updating status', 400);}
+    }
+    //========================================================================================================================
 
 
 

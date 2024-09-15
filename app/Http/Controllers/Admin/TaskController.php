@@ -10,8 +10,8 @@ use App\Http\Trait\ApiResponseTrait;
 use Illuminate\Http\Request;
 use App\Http\Requests\Admin\Store_Task_Request;
 use App\Http\Requests\Admin\Update_Tsak_Request;
-use App\Http\Requests\Admin\UpdateTsakRequest;
-use App\Http\Requests\Admin\UpdateTsakUserRequest;
+use App\Http\Requests\Admin\Update_Status_Tsak_Request;
+use App\Http\Requests\Admin\Update_Notes_Tsak_Request;
 
 
 
@@ -35,9 +35,9 @@ class TaskController extends Controller
      * @return /Illuminate\Http\JsonResponse
      * من أجل قولبة شكل الاستجابة المعادة UserResources استخدام 
      */
-    public function index(Request $request)
+    public function index()
     {  
-        $users = $this->taskservices->getAllTAsks($request->input('priority'),$request->input('status'));
+        $users = $this->taskservices->getAllTAsks();
         return $this->success_Response(TaskResources::collection($users), "All tasks fetched successfully", 200);
     }
     //===========================================================================================================================
@@ -49,22 +49,22 @@ class TaskController extends Controller
     public function store(Store_Task_Request $request)
     {
         $response = $this->taskservices->createTask($request->validated());
-        //التحقق في ما إذا كان السيرفس يعيد رسائل خطأ من أجل طباعتها
-        if ($response instanceof \Illuminate\Http\JsonResponse) {
-            return $response;
-        }
-            return $this->success_Response(new TaskResources($response), "Task created successfully.", 201);
-        
+        return $this->success_Response(new TaskResources($response), "Task created successfully.", 201);
     }
     
     //===========================================================================================================================
     /**
      * method to show task alraedy exist
-     * @param  Task $task
+     * @param  $task_id
      * @return /Illuminate\Http\JsonResponse
      */
-    public function show(Task $task)
+    public function show($task_id)
     {
+        $task = $this->taskservices->view_task($task_id);
+
+        if ($task instanceof \Illuminate\Http\JsonResponse) {
+            return $task;
+        }
         return $this->success_Response(new TaskResources($task), "task viewed successfully", 200);
     }
     //===========================================================================================================================
@@ -77,11 +77,7 @@ class TaskController extends Controller
     public function update(Update_Tsak_Request $request, Task $task)
     {
         $updated = $this->taskservices->updateTask($request->validated(), $task);
-        //التحقق في ما إذا كان السيرفس يعيد رسائل خطأ من أجل طباعتها
-        if ($updated instanceof \Illuminate\Http\JsonResponse) {
-            return $updated;
-        }
-            return $this->success_Response(new TaskResources($updated), "task updated successfully", 200);
+        return $this->success_Response(new TaskResources($updated), "task updated successfully", 200);
     }
     //===========================================================================================================================
     /**
@@ -130,37 +126,65 @@ class TaskController extends Controller
     }
         
     // //========================================================================================================================
-    // /**
-    //  * method to assign task alraedy exist to employee
-    //  * @param   UpdateTsakUserRequest $request
-    //  * @param   $task_id
-    //  * @return /Illuminate\Http\JsonResponse
-    //  */
-    // public function AssignTask(UpdateTsakUserRequest $request , $task_id)
-    // {
-    //     $updated = $this->taskservices->AssignTask($request->validated() , $task_id);
-    //     if ($updated instanceof \Illuminate\Http\JsonResponse) {
-    //         return $updated;
-    //     }
-    //         return $this->SuccessResponse(new TaskResources($updated), "task Assign Task successfully", 200);
-    // }
-        
-    // //========================================================================================================================
-    //         /**
-    //  * method to update status to task by employee
-    //  * @param   UpdateStatusTsakRequest $request
-    //  * @param  $task_id
-    //  * @return /Illuminate\Http\JsonResponse
-    //  */
-    // public function updatedStatus(UpdateStatusTsakRequest $request , $task_id)
-    // {
-    //     $updated = $this->taskservices->updatedStatus($request->validated() , $task_id);
-    //     if ($updated instanceof \Illuminate\Http\JsonResponse) {
-    //         return $updated;
-    //     }
-    //         return $this->success_Response(new TaskResources($updated), "task updated Status successfully", 200);
-    // }
-        
-    // //========================================================================================================================
+    /**
+     * method to update status to task by employee
+     * @param  Store_Task_Request $request
+     * @param  $task_id
+     * @return /Illuminate\Http\JsonResponse
+     */
+    public function create_task(Store_Task_Request $request , $project_id , $task_id)
+    {
+        $updated = $this->taskservices->insert_task($request->validated() , $project_id , $task_id);
+        if ($updated instanceof \Illuminate\Http\JsonResponse) {
+            return $updated;
+        }
+            return $this->success_Response(new TaskResources($updated), "task create successfully", 200);
+    }
+    //========================================================================================================================
+    /**
+     * method to update status to task by employee
+     * @param  Update_Tsak_Request $request
+     * @param  $task_id
+     * @return /Illuminate\Http\JsonResponse
+     */
+    public function Update_task(Update_Tsak_Request $request , $project_id , $task_id)
+    {
+        $updated = $this->taskservices->edit_task($request->validated() , $project_id , $task_id);
+        if ($updated instanceof \Illuminate\Http\JsonResponse) {
+            return $updated;
+        }
+            return $this->success_Response(new TaskResources($updated), "task create successfully", 200);
+    }
+    //========================================================================================================================
+    /**
+     * method to update status to task by employee
+     * @param   Update_Status_Tsak_Request $request
+     * @param  $task_id
+     * @return /Illuminate\Http\JsonResponse
+     */
+    public function updated_Status(Update_Status_Tsak_Request $request , $project_id , $task_id)
+    {
+        $updated = $this->taskservices->updatedStatus($request->validated() , $project_id , $task_id);
+        if ($updated instanceof \Illuminate\Http\JsonResponse) {
+            return $updated;
+        }
+            return $this->success_Response(new TaskResources($updated), "task updated Status successfully", 200);
+    }
+    //========================================================================================================================
+        /**
+     * method to update status to task by employee
+     * @param   Update_Notes_Tsak_Request $request
+     * @param  $task_id
+     * @return /Illuminate\Http\JsonResponse
+     */
+    public function updated_Notes(Update_Notes_Tsak_Request $request , $project_id , $task_id)
+    {
+        $updated = $this->taskservices->updated_Notes($request->validated() , $project_id , $task_id);
+        if ($updated instanceof \Illuminate\Http\JsonResponse) {
+            return $updated;
+        }
+            return $this->success_Response(new TaskResources($updated), "task updated notes successfully", 200);
+    }
+    //========================================================================================================================
 
 }

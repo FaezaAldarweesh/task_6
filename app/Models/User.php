@@ -29,10 +29,6 @@ class User extends Authenticatable implements JWTSubject
         'role',
     ];
 
-    public function setPasswordAttribute($password){
-        $this->attributes['password'] = Hash::make($password);
-    }
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -50,6 +46,7 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed'
     ];
 
      /**
@@ -76,5 +73,6 @@ class User extends Authenticatable implements JWTSubject
         
         return $this->belongsToMany(Project::class)->withPivot('role','contribution_hours','last_activity');
     }
+
 
 }

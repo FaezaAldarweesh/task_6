@@ -76,7 +76,6 @@ class ProjectService {
             $project->users()->sync($user_array);
 
             return $project;
-        } catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 404);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
             return $this->failed_Response('Something went wrong with updating project', 400);

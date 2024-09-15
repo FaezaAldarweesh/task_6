@@ -23,7 +23,8 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:api']], function () {
+
     // protected routes go here
     Route::post('logout',[AuthController::class ,'logout']); 
     
@@ -36,14 +37,27 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('restore_project/{project_id}', [ProjectController::class, 'restore']);
     Route::delete('forceDelete_project/{project_id}', [ProjectController::class, 'forceDelete']);
     
-    Route::apiResource('task', TaskController::class)->middleware('manager_adminMiddleware'); 
+    Route::apiResource('task', TaskController::class); 
     Route::get('restore_task/{task_id}', [TaskController::class, 'restore']);
     Route::delete('forceDelete_task/{task_id}', [TaskController::class, 'forceDelete']);
+
+
+    //only for manager
+    Route::post('create_task/{project_id}/{task_id}', [TaskController::class, 'create_task']);
+    Route::put('Update_task/{project_id}/{task_id}', [TaskController::class, 'Update_task']);
     
+    //only for developer
+    Route::put('updated_Status/{project_id}/{task_id}', [TaskController::class, 'updated_Status']);
+
+    //only for tester
+    Route::put('updated_Notes/{project_id}/{task_id}', [TaskController::class, 'updated_Notes']);
+
+    Route::get('all_tasks', [TaskController::class, 'updated_Notes']);
+
+
 });
     
 
 
 
-//Route::group(['middleware' => ['auth:api']], function () {
 //});

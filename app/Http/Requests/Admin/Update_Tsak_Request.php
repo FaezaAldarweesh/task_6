@@ -55,7 +55,7 @@ class Update_Tsak_Request extends FormRequest
             'status' => 'حالة المهمة',
             'priority' => 'درجة أهمية المهمة',
             'due_date' => 'تاريخ التسليم',
-            'project_id' => 'اسم الموظف',
+            'project_id' => 'اسم المشروع',
             'notes' => 'ملاحطات التاسك',
         ];
     }
@@ -73,7 +73,7 @@ class Update_Tsak_Request extends FormRequest
             'date' => 'يجب أن يكون الحقل :attribute تاريخاً',
             'after_or_equal' => 'يجب أن بكون :attribute بتاريخ اليوم و ما بعد',
             'integer' => 'يجب أن يكون الحقل :attribute من نمط int',
-            'exists' => 'يجب أن يكون :attribute موجودا ضمن جدول الموظفين',
+            'exists' => 'يجب أن يكون :attribute موجودا مسبقا',
             'description.min' => 'الحد الأدنى لطول :attribute على الأقل هو 10 حرف',
             'title.min' => 'الحد الأدنى لطول :attribute على الأقل هو 2 حرف',
             'notes.min' => 'الحد الأدنى لطول :attribute على الأقل هو 10 حرف',

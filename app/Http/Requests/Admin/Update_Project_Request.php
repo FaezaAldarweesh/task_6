@@ -49,7 +49,7 @@ class Update_Project_Request extends FormRequest
     public function attributes(): array
     {
         return [
-            'name' => 'اسم المستخدم',
+            'name' => 'اسم المشروع',
             'description' => 'وصف المشروع',
             'users' => 'المستخدمين',
         ];
