@@ -19,7 +19,7 @@ class ProjectController extends Controller
     use ApiResponseTrait;
     protected $projectservice;
     /**
-     * construct to inject project Services and have middleware to make only admin role access to this functions
+     * construct to inject project Services 
      * @param ProjectService $projectservice
      */
     public function __construct(ProjectService $projectservice)
@@ -29,7 +29,6 @@ class ProjectController extends Controller
     //===========================================================================================================================
     /**
      * method to view all project
-     * @param  Request $request
      * @return /Illuminate\Http\JsonResponse
      * من أجل قولبة شكل الاستجابة المعادة ProjectResources استخدام 
      */
@@ -52,13 +51,14 @@ class ProjectController extends Controller
     //===========================================================================================================================
     /**
      * method to show project alraedy exist
-     * @param  Project $project
+     * @param  $project_id
      * @return /Illuminate\Http\JsonResponse
      */
     public function show($project_id)
     {
         $project = $this->projectservice->view_project($project_id);
 
+        // In case error messages are returned from the services section 
         if ($project instanceof \Illuminate\Http\JsonResponse) {
             return $project;
         }
@@ -79,12 +79,14 @@ class ProjectController extends Controller
     //===========================================================================================================================
     /**
      * method to soft delete project alraedy exist
-     * @param  Project $project
+     * @param  $project_id
      * @return /Illuminate\Http\JsonResponse
      */
     public function destroy($project_id)
     {
         $project = $this->projectservice->delete_Project($project_id);
+
+        // In case error messages are returned from the services section 
         if ($project instanceof \Illuminate\Http\JsonResponse) {
             return $project;
         }
@@ -99,6 +101,8 @@ class ProjectController extends Controller
     public function restore($project_id)
     {
         $project = $this->projectservice->restore_Project($project_id);
+        
+        // In case error messages are returned from the services section 
         if ($project instanceof \Illuminate\Http\JsonResponse) {
             return $project;
         }
@@ -113,6 +117,8 @@ class ProjectController extends Controller
     public function forceDelete($project_id)
     {
         $project = $this->projectservice->force_delete_Project($project_id);
+
+        // In case error messages are returned from the services section 
         if ($project instanceof \Illuminate\Http\JsonResponse) {
             return $project;
         }

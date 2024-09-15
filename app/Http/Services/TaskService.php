@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Request;
 class TaskService {
     //trait لقولبة رسائل الاستجابة
     use ApiResponseTrait;
-    public function getAllTAsks(){
+    public function getAllTAsks($priority,$status){
         try {
-            return Task::with('users')->get();
+            return Task::filter($priority,$status)->get();
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
             return $this->failed_Response('Something went wrong with fetche tasks', 400);
@@ -111,6 +111,16 @@ class TaskService {
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with deleting task', 400);}
     }
     //========================================================================================================================
+
+
+
+
+
+
+
+
+
+
     public function insert_task($data) {
         try {
 
@@ -207,7 +217,16 @@ class TaskService {
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with updating status', 400);}
     }
     //========================================================================================================================
-
+    public function all_tasks(){
+        try {
+            $task = Auth::user()->users->get();
+            return $task;
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return $this->failed_Response('Something went wrong with fetche tasks', 400);
+        }
+    }
+    //========================================================================================================================
 
 
 }

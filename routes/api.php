@@ -29,17 +29,17 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('logout',[AuthController::class ,'logout']); 
     
     //only for admin
-    Route::apiResource('user',UserController::class); 
-    Route::get('restore_user/{user_id}', [UserController::class, 'restore']);
-    Route::delete('forceDelete_user/{user_id}', [UserController::class, 'forceDelete']);
+    Route::apiResource('user',UserController::class)->middleware('is_admin'); 
+    Route::get('restore_user/{user_id}', [UserController::class, 'restore'])->middleware('is_admin');
+    Route::delete('forceDelete_user/{user_id}', [UserController::class, 'forceDelete'])->middleware('is_admin');
     
-    Route::apiResource('project',ProjectController::class); 
-    Route::get('restore_project/{project_id}', [ProjectController::class, 'restore']);
-    Route::delete('forceDelete_project/{project_id}', [ProjectController::class, 'forceDelete']);
+    Route::apiResource('project',ProjectController::class)->middleware('is_admin'); 
+    Route::get('restore_project/{project_id}', [ProjectController::class, 'restore'])->middleware('is_admin');
+    Route::delete('forceDelete_project/{project_id}', [ProjectController::class, 'forceDelete'])->middleware('is_admin');
     
-    Route::apiResource('task', TaskController::class); 
-    Route::get('restore_task/{task_id}', [TaskController::class, 'restore']);
-    Route::delete('forceDelete_task/{task_id}', [TaskController::class, 'forceDelete']);
+    Route::apiResource('task', TaskController::class)->middleware('is_admin'); 
+    Route::get('restore_task/{task_id}', [TaskController::class, 'restore'])->middleware('is_admin');
+    Route::delete('forceDelete_task/{task_id}', [TaskController::class, 'forceDelete'])->middleware('is_admin');
 
 
     //only for manager
@@ -52,7 +52,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     //only for tester
     Route::put('updated_Notes/{project_id}/{task_id}', [TaskController::class, 'updated_Notes']);
 
-    Route::get('all_tasks', [TaskController::class, 'updated_Notes']);
+    Route::get('all_tasks', [TaskController::class, 'all_tasks']);
 
 
 });

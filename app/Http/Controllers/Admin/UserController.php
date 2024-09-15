@@ -17,7 +17,7 @@ class UserController extends Controller
     use ApiResponseTrait;
     protected $userservices;
     /**
-     * construct to inject User Services and have middleware to make only admin role access to this functions
+     * construct to inject User Services 
      * @param UserService $userservices
      */
     public function __construct(UserService $userservices)
@@ -27,7 +27,6 @@ class UserController extends Controller
     //===========================================================================================================================
     /**
      * method to view all user
-     * @param  Request $request
      * @return /Illuminate\Http\JsonResponse
      * من أجل قولبة شكل الاستجابة المعادة UserResources استخدام 
      */
@@ -50,13 +49,14 @@ class UserController extends Controller
     //===========================================================================================================================
     /**
      * method to show user alraedy exist
-     * @param  User $user
+     * @param  $user_id
      * @return /Illuminate\Http\JsonResponse
      */
     public function show($user_id)
     {
         $user = $this->userservices->view_user($user_id);
 
+        // In case error messages are returned from the services section 
         if ($user instanceof \Illuminate\Http\JsonResponse) {
             return $user;
         }
@@ -77,12 +77,14 @@ class UserController extends Controller
     //===========================================================================================================================
     /**
      * method to soft delete user alraedy exist
-     * @param  User $user
+     * @param  $user_id
      * @return /Illuminate\Http\JsonResponse
      */
     public function destroy($user_id)
     {
         $user = $this->userservices->delete_User($user_id);
+
+        // In case error messages are returned from the services section 
         if ($user instanceof \Illuminate\Http\JsonResponse) {
             return $user;
         }
@@ -97,6 +99,8 @@ class UserController extends Controller
     public function restore($user_id)
     {
         $user = $this->userservices->restore_User($user_id);
+
+        // In case error messages are returned from the services section 
         if ($user instanceof \Illuminate\Http\JsonResponse) {
             return $user;
         }
@@ -111,6 +115,8 @@ class UserController extends Controller
     public function forceDelete($user_id)
     {
         $user = $this->userservices->force_delete_User($user_id);
+
+        // In case error messages are returned from the services section 
         if ($user instanceof \Illuminate\Http\JsonResponse) {
             return $user;
         }
