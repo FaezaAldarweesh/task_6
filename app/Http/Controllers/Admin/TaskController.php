@@ -213,9 +213,7 @@ class TaskController extends Controller
     }
     //========================================================================================================================
     /**
-     * method to update status to task by employee
-     * @param   Update_Notes_Tsak_Request $request
-     * @param  $task_id
+     * method to 
      * @return /Illuminate\Http\JsonResponse
      */
     public function all_tasks()

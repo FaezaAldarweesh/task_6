@@ -11,8 +11,13 @@ use App\Models\Project;
 use Illuminate\Support\Facades\Request;
 
 class TaskService {
-    //trait لقولبة رسائل الاستجابة
+    //trait customize the methods for successful , failed , authentecation responses.
     use ApiResponseTrait;
+    /**
+     * method to view all tasks with filter on status and priority
+     * @param   Request $request
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
     public function getAllTAsks($priority,$status){
         try {
             return Task::filter($priority,$status)->get();
@@ -22,6 +27,11 @@ class TaskService {
         }
     }
     //========================================================================================================================
+    /**
+     * method to store a new task
+     * @param   $data
+     * @return /Illuminate\Http\JsonResponse ig have an error
+     */
     public function createTask($data) {
         try {
             $task = new Task;
@@ -35,13 +45,19 @@ class TaskService {
            
             $task->save(); 
     
-            return $task; // تأكد من إعادة كائن المهمة نفسه
+            return $task; 
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
             return $this->failed_Response($th->getMessage(), 400);
         }
     }    
     //========================================================================================================================
+    /**
+     * method to update task alraedy exist
+     * @param  $adat
+     * @param  Task $task
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
     public function updateTask($data,Task $task){
         try {  
             $task->title = $data['title'] ?? $task->title;
@@ -57,6 +73,11 @@ class TaskService {
         }catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response($th->getMessage(), 400);}
     }
     //========================================================================================================================
+    /**
+     * method to show task alraedy exist
+     * @param  $task_id
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
     public function view_task($task_id) {
         try {    
             $task = Task::find($task_id);
@@ -71,6 +92,11 @@ class TaskService {
         }
     }
     //========================================================================================================================
+    /**
+     * method to soft delete task alraedy exist
+     * @param  Task $task
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
     public function deleteTask($task_id)
     {
         try {  
@@ -84,7 +110,11 @@ class TaskService {
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with deleting task', 400);}
     }
     //========================================================================================================================
-
+    /**
+     * method to restore soft delete task alraedy exist
+     * @param   $task_id
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
     public function restoreTask($task_id)
     {
         try {
@@ -98,7 +128,11 @@ class TaskService {
         }
     }
     //========================================================================================================================
-
+    /**
+     * method to force delete task alraedy exist
+     * @param   $task_id
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
     public function forceDeleteTask($task_id)
     {   
         try {
@@ -120,10 +154,15 @@ class TaskService {
 
 
 
-
+    //========================================================================================================================
+    /**
+     * method to create task by manager
+     * @param  $data
+     * @return /Illuminate\Http\JsonResponse
+     */
     public function insert_task($data) {
         try {
-
+            //check if the user have an manager role on this project or not
             $project = Project::where('id', $data['project_id'])
                               ->with(['users' => function($query) {
                               $query->where('user_id', Auth::id());
@@ -149,8 +188,15 @@ class TaskService {
         } catch (\Throwable $th) { Log::error($th->getMessage());  return $this->failed_Response($th->getMessage(), 400);}
     }
     //========================================================================================================================
+    /**
+     * method to update task by manager
+     * @param  $data
+     * @param  Task $task
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
     public function edit_task($data,Task $task){
         try {
+            //check if the user have a manager role on this project or not
             $project = Project::where('id', $data['project_id'])
                               ->with(['users' => function($query) {
                               $query->where('user_id', Auth::id());
@@ -175,11 +221,19 @@ class TaskService {
         }catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response($th->getMessage(), 400);}
     }
     //========================================================================================================================
+      /**
+     * method to update status to task by developer
+     * @param  $data
+     * @param  $project_id
+     * @param  $task_id
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */  
     public function updatedStatus($data , $project_id , $task_id)
     {   
         try {
             $task = Task::findOrFail($task_id);
 
+            //check if the user have a developer role on this project or not
             $project = Project::where('id', $project_id)
                               ->with(['users' => function($query) {
                               $query->where('user_id', Auth::id());
@@ -196,11 +250,19 @@ class TaskService {
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with updating status', 400);}
     }
     //========================================================================================================================
+    /**
+     * method to update notes the task by tester
+     * @param  $data
+     * @param  $project_id
+     * @param  $task_id
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
     public function updated_Notes($data , $project_id , $task_id)
     {   
         try {
             $task = Task::findOrFail($task_id);
 
+            //check if the user have a tester role on this project or not
             $project = Project::where('id', $project_id)
                               ->with(['users' => function($query) {
                               $query->where('user_id', Auth::id());
@@ -217,6 +279,10 @@ class TaskService {
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with updating status', 400);}
     }
     //========================================================================================================================
+      /**
+     * method to 
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */  
     public function all_tasks(){
         try {
             $task = Auth::user()->users->get();
