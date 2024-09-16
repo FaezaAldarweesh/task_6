@@ -28,7 +28,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     // protected routes go here
     Route::post('logout',[AuthController::class ,'logout']); 
     
-    //only for admin
+    //only for admin =========================================================================================================
     Route::apiResource('user',UserController::class)->middleware('is_admin'); 
     Route::get('restore_user/{user_id}', [UserController::class, 'restore'])->middleware('is_admin');
     Route::delete('forceDelete_user/{user_id}', [UserController::class, 'forceDelete'])->middleware('is_admin');
@@ -42,14 +42,16 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::delete('forceDelete_task/{task_id}', [TaskController::class, 'forceDelete'])->middleware('is_admin');
 
 
-    //only for manager
+    //only for manager =======================================================================================================
     Route::post('create_task/{project_id}/{task_id}', [TaskController::class, 'create_task']);
     Route::put('Update_task/{project_id}/{task_id}', [TaskController::class, 'Update_task']);
+
     
-    //only for developer
+    //only for developer =====================================================================================================
     Route::put('updated_Status/{project_id}/{task_id}', [TaskController::class, 'updated_Status']);
 
-    //only for tester
+
+    //only for tester ========================================================================================================
     Route::put('updated_Notes/{project_id}/{task_id}', [TaskController::class, 'updated_Notes']);
 
     Route::get('all_tasks', [TaskController::class, 'all_tasks']);
