@@ -212,15 +212,4 @@ class TaskController extends Controller
             return $this->success_Response(new TaskResources($updated), "task notes updated successfully", 200);
     }
     //========================================================================================================================
-    /**
-     * method to 
-     * @return /Illuminate\Http\JsonResponse
-     */
-    public function all_tasks()
-    {
-        $updated = $this->taskservices->all_tasks();
-        return $this->success_Response(new TaskResources($updated), "task updated notes successfully", 200);
-    }
-    //========================================================================================================================
-
 }

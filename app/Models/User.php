@@ -74,5 +74,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Project::class)->withPivot('role','contribution_hours','last_activity');
     }
   
-    
+    //relation that rfeturn all user tasks by using HasManyThrough relation (tasks model and pivot model)
+    public function tasks(){
+
+        return $this->hasManyThrough(Task::class, ProjectUser::class,'user_id','project_id','id','project_id');
+
+    }
 }

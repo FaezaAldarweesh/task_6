@@ -10,6 +10,9 @@ use App\Http\Trait\ApiResponseTrait;
 use App\Http\Resources\UserResources;
 use App\Http\Requests\Admin\Store_User_Request;
 use App\Http\Requests\Admin\Update_User_Request;
+use App\Http\Resources\TaskResources;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -123,6 +126,21 @@ class UserController extends Controller
             return $this->success_Response(null, "user force deleted successfully", 200);
     }
         
+    //========================================================================================================================
+    /**
+     * method to get all task that belongs to user
+     * @return /Illuminate\Http\JsonResponse
+     */
+    public function all_tasks()
+    {
+        $tasks = $this->userservices->all_tasks();
+
+        // In case error messages are returned from the services section 
+        if ($tasks instanceof \Illuminate\Http\JsonResponse) {
+            return $tasks;
+        }
+            return $this->success_Response(TaskResources::collection($tasks), "All tasks fetched successfully", 200);
+    }    
     //========================================================================================================================
 
 }

@@ -279,20 +279,4 @@ class TaskService {
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with updating status', 400);}
     }
     //========================================================================================================================
-      /**
-     * method to 
-     * @return /Illuminate\Http\JsonResponse if have an error
-     */  
-    public function all_tasks(){
-        try {
-            $task = Auth::user()->users->get();
-            return $task;
-        } catch (\Throwable $th) {
-            Log::error($th->getMessage());
-            return $this->failed_Response('Something went wrong with fetche tasks', 400);
-        }
-    }
-    //========================================================================================================================
-
-
 }

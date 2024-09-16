@@ -47,11 +47,5 @@ class Task extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
-    }
-
-    public function users()
-    {
-       return $this->hasManyThrough(User::class,Project::class);
-    }
-    
+    }    
 }

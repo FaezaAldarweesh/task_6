@@ -3,8 +3,11 @@
 namespace App\Http\Services;
 
 use App\Models\User;
+use App\Models\Project;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Trait\ApiResponseTrait;
+use App\Http\Resources\TaskResources;
 
 
 class UserService {
@@ -145,6 +148,27 @@ class UserService {
             return $user->forceDelete();
         } catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with deleting user', 400);}
+    }
+    //========================================================================================================================
+
+    /**
+     * method to get all task that belongs to user
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */  
+    public function all_tasks()
+    {
+        try {
+            //catch the login user
+            $user = Auth::user();
+            //then call relation tasks to return all tasks that belongs to the user
+            $tasks = $user->tasks; 
+
+            if ($tasks->isEmpty()) {
+                throw new \Exception('You do not have any tasks');
+            }
+            return $tasks;
+        } catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);
+        } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('something went wrong with fetching all tasks', 400);}
     }
     //========================================================================================================================
 }

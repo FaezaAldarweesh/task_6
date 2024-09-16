@@ -54,7 +54,8 @@ Route::group(['middleware' => ['auth:api']], function () {
     //only for tester ========================================================================================================
     Route::put('updated_Notes/{project_id}/{task_id}', [TaskController::class, 'updated_Notes']);
 
-    Route::get('all_tasks', [TaskController::class, 'all_tasks']);
+    Route::get('all_tasks', [UserController::class, 'all_tasks']);
+    Route::get('filter_tasks', [TaskController::class, 'filter_tasks']);
 
 
 });
