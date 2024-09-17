@@ -1,6 +1,6 @@
 The system supports creating, updating, and deleting tasks, assigning roles to users, tracking task statuses, and managing user contributions to projects. It's a multi-user system with role-based access control.
 
-**Features**
+## Features
 - User Authentication: Allows users to log in and manage their tasks.
 - Task Management: Users can create, update, delete, and filter tasks based on priority and status.
 - Project Management: Projects can have multiple users with specific roles and contribution hours.
@@ -8,7 +8,7 @@ The system supports creating, updating, and deleting tasks, assigning roles to u
 - Assigning Tasks to Projects: Tasks are associated with specific projects, and users can manage their tasks per project.
 
 ## Installation
-- git clone https:
+- git clone https:https://github.com/FaezaAldarweesh/task_6/tree/master
 - composer install
 - cp .env.example .env
 - php artisan key:generate
@@ -39,4 +39,4 @@ The system provides a set of RESTful APIs to manage tasks and projects.
 - DELETE /users/{id}: Delete a user.
 
   ## postman
-  - documentation link : 
+  - documentation link : https://documenter.getpostman.com/view/34467473/2sAXqqcNpe
