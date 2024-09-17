@@ -142,5 +142,20 @@ class UserController extends Controller
             return $this->success_Response(TaskResources::collection($tasks), "All tasks fetched successfully", 200);
     }    
     //========================================================================================================================
+    /**
+     * method to 
+     * @return /Illuminate\Http\JsonResponse
+     */
+    public function filter_tasks(Request $request)
+    {
+        $tasks = $this->userservices->filter_tasks($request->input('priority'),$request->input('status'));
+
+        // In case error messages are returned from the services section 
+        if ($tasks instanceof \Illuminate\Http\JsonResponse) {
+            return $tasks;
+        }
+            return $this->success_Response($tasks, "All tasks fetched successfully", 200);
+    }    
+    //========================================================================================================================
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
 use Illuminate\Support\Facades\Log;
@@ -156,6 +157,66 @@ class ProjectService {
             return $project->forceDelete();
         } catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with deleting project', 400);}
+    }
+    //========================================================================================================================
+
+
+
+
+    //========================================================================================================================
+    /**
+     * method to return oldest task from the project
+     * @param  $project_id
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
+    public function oldest_task($project_id)
+    {   
+        try {
+            $project = Project::find($project_id);
+            if(!$project){
+                throw new \Exception('project not found');
+            }
+
+            $task = Project::where('id',$project_id)->with('oldestTask')->first();
+            
+            return $task;
+
+        }catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);   
+        } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with fitching', 400);}
+    }
+    //========================================================================================================================
+    /**
+     * method to return latest task from the project
+     * @param  $project_id
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
+    public function latest_task($project_id)
+    {   
+        try {
+            $project = Project::find($project_id);
+            if(!$project){
+                throw new \Exception('project not found');
+            }
+
+            $task = Project::where('id',$project_id)->with('latestTask')->first();
+            
+            return $task;
+
+        }catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);   
+        } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with fitching', 400);}
+    }
+    //========================================================================================================================
+    /**
+     * method to return Very important task
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */
+    public function Very_important_task()
+    {   
+        try {
+            $task = Project::with('VITask')->get();
+            return $task;
+            
+        } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response($th->getMessage(), 400);}
     }
     //========================================================================================================================
 }

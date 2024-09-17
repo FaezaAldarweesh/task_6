@@ -55,7 +55,10 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::put('updated_Notes/{project_id}/{task_id}', [TaskController::class, 'updated_Notes']);
 
     Route::get('all_tasks', [UserController::class, 'all_tasks']);
-    Route::get('filter_tasks', [TaskController::class, 'filter_tasks']);
+    Route::get('filter_tasks', [UserController::class, 'filter_tasks']);
+    Route::get('oldest_task/{project_id}', [ProjectController::class, 'oldest_task']);
+    Route::get('latest_task/{project_id}', [ProjectController::class, 'latest_task']);
+    Route::get('Very_important_task', [ProjectController::class, 'Very_important_task']);
 
 
 });

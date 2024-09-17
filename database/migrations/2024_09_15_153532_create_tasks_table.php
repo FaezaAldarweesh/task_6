@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->enum('status',['New','In progress','Done'])->default('New');  
-            $table->enum('priority',['High','Medium','Low'])->default('Medium');
+            $table->enum('priority',['Low','Medium','High'])->default('Medium');
             $table->date('due_date');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->text('notes')->nullable();

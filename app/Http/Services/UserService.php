@@ -2,11 +2,12 @@
 
 namespace App\Http\Services;
 
+use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Trait\ApiResponseTrait;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\TaskResources;
 
 
@@ -150,7 +151,6 @@ class UserService {
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('Something went wrong with deleting user', 400);}
     }
     //========================================================================================================================
-
     /**
      * method to get all task that belongs to user
      * @return /Illuminate\Http\JsonResponse if have an error
@@ -170,5 +170,26 @@ class UserService {
         } catch (\Exception $e) { Log::error($e->getMessage()); return $this->failed_Response($e->getMessage(), 400);
         } catch (\Throwable $th) { Log::error($th->getMessage()); return $this->failed_Response('something went wrong with fetching all tasks', 400);}
     }
+    //========================================================================================================================
+    /**
+     * method to 
+     * @return /Illuminate\Http\JsonResponse if have an error
+     */  
+    public function filter_tasks($priority , $status)
+    {
+        try {   
+
+        $tasks = User::with('tasks')->get();
+        return $tasks;
+           
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return $this->failed_Response($e->getMessage(), 400);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return $this->failed_Response($th->getMessage(), 400);
+        }
+    }
+    
     //========================================================================================================================
 }
