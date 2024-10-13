@@ -60,10 +60,5 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::get('latest_task/{project_id}', [ProjectController::class, 'latest_task']);
     Route::get('Very_important_task', [ProjectController::class, 'Very_important_task']);
 
-
 });
     
-
-
-
-//});

@@ -28,8 +28,7 @@ trait ApiResponseTrait
         'message'       => $message,
     ];
     return response()->json($array,$status);
-}
-    
+    }
 }
 
 
